@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Babylon Car</title>
+    <style>
+      html,
+      body {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+    </style>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  </head>
+  <body>
+    <canvas id="renderCanvas" touch-action="none"></canvas>
+    <script>
+      const canvas = document.getElementById("renderCanvas");
+      const engine = new BABYLON.Engine(canvas, true);
+
+      const createScene = function () {
+        const scene = new BABYLON.Scene(engine);
+
+        const camera = new BABYLON.ArcRotateCamera(
+          "camera",
+          -Math.PI / 2,
+          Math.PI / 2.5,
+          15,
+          new BABYLON.Vector3(0, 0, 0)
+        );
+        camera.attachControl(canvas, true);
+        const light = new BABYLON.HemisphericLight(
+          "light",
+          new BABYLON.Vector3(1, 1, 0)
+        );
+
+        // Create car body
+        const carBody = BABYLON.MeshBuilder.CreateBox("carBody", {
+          width: 2,
+          height: 0.5,
+          depth: 1,
+        });
+        carBody.position.y = 0.25;
+
+        // Create wheels
+        const wheel1 = BABYLON.MeshBuilder.CreateCylinder("wheel1", {
+          diameter: 0.5,
+          height: 0.2,
+        });
+        wheel1.position = new BABYLON.Vector3(-0.8, -0.2, 0.5);
+
+        const wheel2 = wheel1.clone("wheel2");
+        wheel2.position.x = -wheel1.position.x;
+
+        const wheel3 = wheel1.clone("wheel3");
+        wheel3.position.z = -wheel1.position.z;
+
+        const wheel4 = wheel1.clone("wheel4");
+        wheel4.position.x = -wheel1.position.x;
+
+        // Create additional details (e.g., roof)
+        const roof = BABYLON.MeshBuilder.CreateBox("roof", {
+          width: 1.8,
+          height: 0.3,
+          depth: 0.8,
+        });
+        roof.position.y = 0.6;
+
+        // Set up materials
+        const carMaterial = new BABYLON.StandardMaterial("carMaterial", scene);
+        carMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.8);
+        carBody.material = carMaterial;
+        roof.material = carMaterial;
+
+        const wheelMaterial = new BABYLON.StandardMaterial(
+          "wheelMaterial",
+          scene
+        );
+        wheelMaterial.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+        wheel1.material = wheelMaterial;
+        wheel2.material = wheelMaterial;
+        wheel3.material = wheelMaterial;
+        wheel4.material = wheelMaterial;
+
+        return scene;
+      };
+
+      const scene = createScene();
+
+      engine.runRenderLoop(function () {
+        scene.render();
+      });
+
+      window.addEventListener("resize", function () {
+        engine.resize();
+      });
+    </script>
+  </body>
+</html>
